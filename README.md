@@ -6,7 +6,8 @@ This, on its turn, helps the designer of the learning task to select adequate va
 So far we have proposed two directions for this. The first (Stefanello et al. 2016; Oliveira et al. 2017) 
 deals mainly with topological characterization of the network, it considers the demand only in what regards the computation of 
 the coupling between shortest paths among the various OD pairs.
-The code corresponding to the coupling metric can be found in the route_coupling folder.
+The code corresponding to the coupling metric can be found in the route_coupling folder:
+https://github.com/maslab-ufrgs/route_coupling
 
 The second metric is based on entropy (Redwan and Bazzan 2020). The code can be found in the entropy_metric folder.
 

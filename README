@@ -5,7 +5,8 @@ Therefore, our work (see references below) aims at finding metrics that characte
 This, on its turn, helps the designer of the learning task to select adequate values for the parameters of the model (e.g., learning rate), as well as the exploration-exploitation strategy.
 
 So far we have proposed two directions for this. The first (Stefanello et al. 2016; Oliveira et al. 2017) 
-deals mainly with topological characterization of the network, it considers the demand only in what regards the computation of the _coupling_ between shortest paths among the various OD pairs.
+deals mainly with topological characterization of the network, it considers the demand only in what regards the computation of 
+the coupling between shortest paths among the various OD pairs.
 The code corresponding to the coupling metric can be found in the route_coupling folder.
 
 The second metric is based on entropy (Redwan and Bazzan 2020). The code can be found in the entropy_metric folder.

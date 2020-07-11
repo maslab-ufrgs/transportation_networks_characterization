@@ -5,7 +5,7 @@ Python implementation of the entropy metric proposed by Camil
  * [Python 3](https://www.python.org/downloads/)
  * [Python Mathematical Expression Evaluator](https://pypi.python.org/pypi/py_expression_eval)
  * [MSA implementation](https://github.com/maslab-ufrgs/MSA)
- * [KSP implementation](https://github.com/maslab-ufrgs/ksp)
+ * KSP implementation (use KSP3.py in this repository)
  
   ## Networks
  Available at:  [Networks](https://github.com/maslab-ufrgs/transportation_networks)

@@ -8,7 +8,7 @@ from random_allocation import random_allocation
 import numpy as np
 import matplotlib.pyplot as plt
 
-from KSP import KShortestPaths
+from KSP3 import KShortestPaths
 
 from successive_averages import dijkstra
 from successive_averages import generateGraph

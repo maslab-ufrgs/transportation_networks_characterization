@@ -72,6 +72,19 @@ class Dtmc:
     def __init__(self):
         
         self.__dtmc = dict()
+        """
+        Dictionary of dictionaries.
+        
+        The keys of self.__dtmc are origins of the edges.
+        
+        For an edge i in self.__dtmc,
+        self.__dtmc[i] is a dictionary whose keys are the
+        destinations of the edges with origin i.
+        
+        For an edge (i,j) stored in self.__dtmc,
+        self.__dtmc[i][j] returns the integer internal
+        representation of the weight of the edge.
+        """
         
         self.__visiting = dict()
         # Each time self.addOne(i,j) is called,

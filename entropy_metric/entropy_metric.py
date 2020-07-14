@@ -61,6 +61,10 @@ class SmartTable:
 
 
 class Dtmc:
+    '''
+    Dtmc stant's for (D)iscrete (t)ime (M)arkov (c)hain,
+    ou Cadeia de Markov em tempo discreto.
+    '''
     
     def __init__(self):
         

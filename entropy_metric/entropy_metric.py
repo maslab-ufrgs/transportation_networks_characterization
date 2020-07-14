@@ -64,15 +64,33 @@ class Dtmc:
     '''
     Dtmc stant's for (D)iscrete (t)ime (M)arkov (c)hain,
     ou Cadeia de Markov em tempo discreto.
+    
+    Use self.probability() to retrieve the Markov Chain
+    as a dictionary of transitions.   
     '''
     
     def __init__(self):
         
         self.__dtmc = dict()
+        
         self.__visiting = dict()
+        # Each time self.addOne(i,j) is called,
+        # add one unit to self.__visiting[j]
+        # The idea is that whe are *leaving* i
+        # to *visit* state j
+        
         self.__counter  = 0
+        # Keeps an internal time lapse counter
     
     def addOne(self, i, j=None):
+        """
+        In this implementation, the only way to change edges weight is
+        adding one unit to the internal (integer) representation of the
+        weight of edge (i,j)
+        
+        If there is no edge (i,j) in the Dtmc, create it. And if there
+        is no node i or j, create them in order to create edge (i,j)
+        """
         
         self.__counter += 1
         
@@ -178,6 +196,10 @@ class Dtmc:
         return mu
     
     def probability(self):
+        """
+        Retrieve a Markov Chain from the internal
+        integer representation of the dtmc.
+        """
         
         my_dict = dict()
         

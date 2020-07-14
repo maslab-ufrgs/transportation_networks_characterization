@@ -279,6 +279,10 @@ class entropy_metric:
                     route_edge = getPathAsEdges(sp, E)
                 
                     self.routes[od][key] = route_edge
+                    
+        self.global_dtmc = Dtmc()
+        self.last_global_preference = ''
+        self.global_preference      = ''
 
     def search_iteration(self):
                 
@@ -337,6 +341,9 @@ class entropy_metric:
             # Atualiza o custo dessa rota
             self.smartTables[od].updateTable(key[od], cost)
                 
+        self.last_global_preference = self.global_preference
+        self.global_preference      = ''
+        
         for od in self.OD:
                 
             if self.smartTables[od].get(key[od]) < \
@@ -347,11 +354,21 @@ class entropy_metric:
                     
                 # Atualizar preferencia
                 self.smartTables[od].updatePreference(key[od])
+                
+                self.global_preference += (' | ' + self.smartTables[od].preference())
                     
             else:
                 pref = self.smartTables[od].preference()
                 # Atualizar o dtmc
-                self.dtmc[od].addOne(pref, pref) 
+                self.dtmc[od].addOne(pref, pref)
+                
+                self.global_preference += (' | ' + self.smartTables[od].preference())   
+                
+        
+        if self.last_global_preference == '':
+            pass
+        elif self.last_global_preference != '':
+            self.global_dtmc.addOne(self.last_global_preference, self.global_preference)
 
     def entropy_iteration(self):
         # Cálculo das entropias
@@ -456,6 +473,9 @@ if __name__ == '__main__':
                       args.episodes, ksp=True)
         H.run()
 
+        print("--- Global entorpy ---")
+        print(args.network_file, H.global_dtmc.entropy())
+        print("--- OD pairs entropy ---")
         for od in OD:
             print(od, round(H.entropy[od][-1],3))
                     

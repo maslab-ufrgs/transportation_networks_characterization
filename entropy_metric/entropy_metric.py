@@ -241,7 +241,7 @@ class Dtmc:
 
 class entropy_metric:
     
-    def __init__(self, V, E, OD, k, Ep, ep, ksp=True):
+    def __init__(self, V, E, OD, k, Ep, ep, ksp=True, group=1):
         
         # Set of nodes (class Nodes imported from successive_averages.py)
         self.V  = V
@@ -283,6 +283,9 @@ class entropy_metric:
         # Episodes for discovery of new routes
         self.episodes    = int(ep)
         
+        # Groups of trips
+        self.group       = int(group)
+        
         # Episode counter variable
         self.t = 0        
         
@@ -322,6 +325,7 @@ class entropy_metric:
         self.global_dtmc = Dtmc()
         self.last_global_preference = ''
         self.global_preference      = ''
+        
 
     def search_iteration(self):
                 
@@ -352,11 +356,11 @@ class entropy_metric:
         for od in self.OD:
             
             # New random assingment for OD pair od         
-            random_flow = random_allocation(int(self.OD[od]),
+            random_flow = random_allocation(int(self.OD[od]/self.group),
                                             len(self.routes[od]))
             
             for z, route_key in enumerate(self.routes[od]):
-                flow = random_flow[ z ]
+                flow = random_flow[ z ] * self.group
                 for edge in self.routes[od][route_key]:
                     self.E[edge.name].flow += flow
                 
@@ -490,6 +494,14 @@ if __name__ == '__main__':
                      required=False, default=0,
                       help="Number of episodes estimating new route.\n")
     
+    prs.add_argument("-r", dest="repetitions", type=int,
+                     required=False, default=1,
+                      help="Number of repetitions.\n")
+    
+    prs.add_argument("-g", dest="group", type=int,
+                     required=False, default=1,
+                     help="Grouping trips.\n")
+    
     args = prs.parse_args()
 
     V, E, OD = generateGraph(args.network_file)
@@ -504,19 +516,62 @@ if __name__ == '__main__':
         print("Can't set ksp and kmax simultaneosly!")
     
     elif args.maxroutes == 0 and args.ksp > 0:
+        
+        print("--- Entropy metric experiment ---")
+        print("Network Name:", args.network_file)
+        print("Number of k routes", args.ksp)
+        if args.group > 1:
+            print("Grouping factor: {}".format(args.group))
+        print("Number of repetitions: {}".format(args.repetitions))
+        
+        hg = list()
+        h  = dict()
+        mu = dict()
+        for od in OD:
+            h[od] = list() # Store entropies along repetitions for each od pair
+            mu[od] = dict()
+            for i in range(0,args.ksp):
+                mu[od][i] = list()
+                # Store route choice preference for each route i
+                # of the OD pair od
+        
+        HH = list()
+        
+        for r in range(args.repetitions):
+            HH.append( entropy_metric(V, E, OD,
+                               args.ksp,
+                               args.Episodes,
+                               args.episodes,
+                               ksp=True,
+                               group=args.group) )
             
-        # Chamada com o ksp
-        H = entropy_metric(V, E, OD,
-                      args.ksp,
-                      args.Episodes,
-                      args.episodes, ksp=True)
-        H.run()
-
-        print("--- Global entorpy ---")
-        print(args.network_file, H.global_dtmc.entropy())
+        for H in HH:
+            
+            H.run()
+            
+            hg.append(H.global_dtmc.entropy())
+            for od in OD:
+                h[od].append(H.dtmc[od].entropy())
+                for i, route in enumerate(H.routes[od]):
+                    try:
+                        mu[od][i].append(H.dtmc[od].asymptoty()[route])
+                    except KeyError:
+                        mu[od][i].append(0.0)
+                
+        print("--- Global entropy ---")
+        print(args.network_file, round(np.mean(hg),3),
+              '+-', round(np.std(hg)/float(len(hg))**0.5,3))
         print("--- OD pairs entropy ---")
         for od in OD:
-            print(od, round(H.entropy[od][-1],3))
+            print(od, round(np.mean(h[od]),3), '+-',
+                  round(np.std(h[od])/float(len(h[od]))**0.5,3))
+        print("--- mu values---")
+        for od in OD:
+            for i, route in enumerate(H.routes[od]):
+                print('{}({})'.format(od,1+i), ' ', route, ' ',
+                      round( np.mean(mu[od][i]),3), '+-',
+                      round(np.std(mu[od][i])/float(len(mu[od][i]))**0.5,3))
+            print("---------------------------")
                     
     elif args.maxroutes > 0 and args.ksp == 0:
         
